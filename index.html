@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RESQ ME</title>
+  <link rel="icon" type="image/png" href="assets/Logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ═══════════════════════════════════════════════
+       DATA PRIVACY ACT MODAL — inline styles only,
+       no changes to style.css needed
+  ════════════════════════════════════════════════ -->
+  <style>
+    /* ── Overlay ── */
+    #privacyOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      animation: dpFadeIn .3s ease;
+    }
+
+    @keyframes dpFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ── Modal box ── */
+    #privacyModal {
+      background: #fff;
+      color: #1a1f2e;
+      border-radius: 18px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.55);
+      max-width: 560px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: dpSlideUp .35s cubic-bezier(.22,.68,0,1.2);
+    }
+
+    @keyframes dpSlideUp {
+      from { opacity: 0; transform: translateY(30px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* dark theme — matches site data-theme */
+    [data-theme="dark"] #privacyModal {
+      background: #161b22;
+      color: #e6edf3;
+      border: 1px solid #30363d;
+    }
+
+    /* ── Header band ── */
+    #privacyModal .dp-header {
+      background: #c0392b;
+      padding: 22px 28px 18px;
+      flex-shrink: 0;
+    }
+
+    #privacyModal .dp-header h2 {
+      font-family: Raleway, sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #fff;
+      margin: 0 0 4px;
+      letter-spacing: .02em;
+    }
+
+    #privacyModal .dp-header p {
+      font-size: .8rem;
+      color: rgba(255,255,255,.78);
+      margin: 0;
+    }
+
+    /* ── Scrollable body ── */
+    #privacyModal .dp-body {
+      padding: 22px 28px;
+      overflow-y: auto;
+      flex: 1;
+      font-size: .88rem;
+      line-height: 1.72;
+    }
+
+    #privacyModal .dp-body h3 {
+      font-family: Raleway, sans-serif;
+      font-weight: 700;
+      font-size: .92rem;
+      margin: 16px 0 4px;
+      color: #c0392b;
+    }
+
+    #privacyModal .dp-body h3:first-child { margin-top: 0; }
+
+    #privacyModal .dp-body p,
+    #privacyModal .dp-body ul {
+      margin: 0 0 10px;
+      color: inherit;
+      opacity: .88;
+    }
+
+    #privacyModal .dp-body ul {
+      padding-left: 18px;
+    }
+
+    #privacyModal .dp-body ul li { margin-bottom: 4px; }
+
+    #privacyModal .dp-body .dp-law {
+      font-size: .78rem;
+      background: rgba(192,57,43,.08);
+      border-left: 3px solid #c0392b;
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      margin-top: 14px;
+    }
+
+    [data-theme="dark"] #privacyModal .dp-body .dp-law {
+      background: rgba(192,57,43,.15);
+    }
+
+    /* ── Footer / action row ── */
+    #privacyModal .dp-footer {
+      padding: 16px 28px 22px;
+      flex-shrink: 0;
+      border-top: 1px solid rgba(0,0,0,.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    [data-theme="dark"] #privacyModal .dp-footer {
+      border-top-color: #30363d;
+    }
+
+    /* Checkbox row */
+    #privacyModal .dp-checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .84rem;
+      line-height: 1.5;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #privacyModal .dp-checkbox-row input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      accent-color: #c0392b;
+      cursor: pointer;
+    }
+
+    /* Button row */
+    #privacyModal .dp-btn-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    #privacyModal .dp-btn-row button {
+      flex: 1;
+      padding: 11px 0;
+      border-radius: 10px;
+      font-family: Raleway, sans-serif;
+      font-weight: 700;
+      font-size: .88rem;
+      cursor: pointer;
+      border: none;
+      transition: opacity .18s, transform .12s;
+    }
+
+    #privacyModal .dp-btn-row button:active { transform: scale(.97); }
+
+    #btnDecline {
+      background: transparent;
+      border: 1.5px solid #c0392b !important;
+      color: #c0392b;
+    }
+
+    #btnDecline:hover { background: rgba(192,57,43,.07); }
+
+    #btnAccept {
+      background: #c0392b;
+      color: #fff;
+    }
+
+    #btnAccept:hover { opacity: .88; }
+
+    #btnAccept:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    /* Hide main content while modal is open */
+    body.dp-locked main,
+    body.dp-locked header,
+    body.dp-locked footer {
+      filter: blur(3px);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       DATA PRIVACY ACT POPUP MODAL
+  ════════════════════════════════════════════════ -->
+  <div id="privacyOverlay" role="dialog" aria-modal="true" aria-labelledby="dpTitle">
+    <div id="privacyModal">
+
+      <div class="dp-header">
+        <h2 id="dpTitle">🔒 Data Privacy Notice</h2>
+        <p>Republic Act No. 10173 — Data Privacy Act of 2012</p>
+      </div>
+
+      <div class="dp-body">
+        <h3>Purpose of Data Collection</h3>
+        <p>RESQ ME collects and processes your personal and medical information solely to generate your emergency health profile and QR identification tag. Your data enables first responders to access critical health information during emergencies.</p>
+
+        <h3>What We Collect</h3>
+        <ul>
+          <li>Personal information (name, date of birth, sex, address, contact details)</li>
+          <li>Emergency contact information</li>
+          <li>Medical information (allergies, medications, chronic conditions, medical history)</li>
+          <li>Health insurance and primary care provider details</li>
+          <li>Patient photo (optional)</li>
+        </ul>
+
+        <h3>How Your Data is Used</h3>
+        <ul>
+          <li>Stored securely in a database linked to your unique Patient ID</li>
+          <li>Accessible via your personal QR code to authorized viewers (e.g., first responders)</li>
+          <li>Never sold, shared, or disclosed to third parties without your consent</li>
+          <li>Used only for emergency identification and health profile purposes</li>
+        </ul>
+
+        <h3>Your Rights Under RA 10173</h3>
+        <ul>
+          <li><strong>Right to be informed</strong> — you are notified before data is collected</li>
+          <li><strong>Right to access</strong> — you may request a copy of your stored data</li>
+          <li><strong>Right to rectification</strong> — you may correct inaccurate data</li>
+          <li><strong>Right to erasure</strong> — you may request deletion of your record</li>
+          <li><strong>Right to data portability</strong> — you may request a copy in usable format</li>
+        </ul>
+
+        <h3>Data Retention</h3>
+        <p>Your data is retained for as long as your RESQ ME profile is active. You may request deletion at any time by contacting us at <strong>support@resqme.com</strong>.</p>
+
+        <div class="dp-law">
+          <strong>Legal Basis:</strong> This notice is issued in compliance with the <em>Data Privacy Act of 2012 (RA 10173)</em> and its Implementing Rules and Regulations, administered by the National Privacy Commission (NPC) of the Philippines.
+        </div>
+      </div>
+
+      <div class="dp-footer">
+        <label class="dp-checkbox-row" for="dpAgreeCheck">
+          <input type="checkbox" id="dpAgreeCheck" />
+          <span>I have read and understood this Data Privacy Notice, and I voluntarily consent to the collection and processing of my personal and medical data by RESQ ME.</span>
+        </label>
+        <div class="dp-btn-row">
+          <button id="btnDecline" type="button">Decline</button>
+          <button id="btnAccept" type="button" disabled>I Agree & Continue</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- END PRIVACY MODAL -->
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <img src="assets/Logo.png" alt="RESQ ME" class="logo-img" />
+      </div>
+      <div>
+        <h1>RESQ ME</h1>
+      </div>
+    </div>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <nav class="main-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#shop">Shop</a></li>
+        <li><a href="#patientForm">Intake Form</a></li>
+        <li><a href="#orderForm">Order Form</a></li>
+        <li><a href="#about">About</a></li>
+        <div class="header-actions nav-actions">
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+        </div>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="page">
+    <section id="home" class="hero card">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="kicker">Hello, Welcome aboard!</p>
+          <h2>Your critical health information, reachable when time is limited.</h2>
+          <p>
+            The company offers free digital profiles alongside affordable physical keychains and card-style tags to ensure vital health data is reachable when time is limited.
+          </p>
+        </div>
+        <div class="hero-image" role="img" aria-label="Storefront image"></div>
+      </div>
+    </section>
+
+    <section id="shop" class="favorites card">
+      <div class="section-head">
+        <p class="kicker">PRODUCTS</p>
+        <h3>Buy our products now</h3>
+      </div>
+      <div class="favorites-list">
+        <div class="fav-item">
+          <img src="assets/Product1.png" alt="Product 1" />
+          <div class="fav-meta"><strong>QR CODE SCREENSHOT</strong><span>FREE</span></div>
+        </div>
+        <div class="fav-item">
+          <img src="assets/Product2.png" alt="Product 2" />
+          <div class="fav-meta"><strong>QR KEYCHAIN W/ NFC</strong><span>₱100.00</span></div>
+        </div>
+        <div class="fav-item">
+          <img src="assets/Product3.png" alt="Product 3" />
+          <div class="fav-meta"><strong>QR CARD W/ NFC</strong><span>₱150.00</span></div>
+        </div>
+      </div>
+    </section>
+
+    <br>
+    <section class="layout">
+      <section class="card form-card">
+        <div class="section-head">
+          <p class="kicker">Intake form</p>
+          <h3>Patient details</h3>
+        </div>
+
+        <form id="patientForm" class="form-grid">
+
+          <!-- PHOTO -->
+          <div class="field field-span-2">
+            <label for="photo">Patient Photo</label>
+            <input id="photo" name="photo" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
+            <small class="hint">Image will be converted to base64 and stored.</small>
+          </div>
+
+          <!-- FULL NAME -->
+          <div class="field">
+            <label for="full_name">Full Name</label>
+            <input id="full_name" name="full_name" required />
+          </div>
+
+          <!-- SEX — radio -->
+          <div class="field">
+            <span class="field-label">Sex</span>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="sex" value="Male" required />
+                <span>Male</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="sex" value="Female" />
+                <span>Female</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- DATE OF BIRTH -->
+          <div class="field">
+            <label for="dob">Date of Birth</label>
+            <input id="dob" name="dob" type="date" required />
+          </div>
+
+          <!-- ADDRESS -->
+          <div class="field field-span-2">
+            <label for="address">Address</label>
+            <input id="address" name="address" />
+          </div>
+
+          <!-- PHONE -->
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" />
+          </div>
+
+          <!-- EMAIL -->
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" />
+          </div>
+
+          <!-- EMERGENCY CONTACT NAME -->
+          <div class="field">
+            <label for="emergency_name">Emergency Contact Name</label>
+            <input id="emergency_name" name="emergency_name" />
+          </div>
+
+          <!-- RELATIONSHIP — dropdown -->
+          <div class="field">
+            <label for="emergency_relationship">Relationship</label>
+            <select id="emergency_relationship" name="emergency_relationship">
+              <option value="" disabled selected>Select relationship…</option>
+              <option value="Parent">Parent</option>
+              <option value="Spouse">Spouse</option>
+              <option value="Sibling">Sibling</option>
+              <option value="Guardian">Guardian</option>
+              <option value="Child">Child</option>
+              <option value="Friend">Friend</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- EMERGENCY PHONE -->
+          <div class="field">
+            <label for="emergency_phone">Emergency Phone</label>
+            <input id="emergency_phone" name="emergency_phone" />
+          </div>
+
+          <!-- ALLERGIES — Yes/No + conditional textarea -->
+          <div class="field field-span-2">
+            <span class="field-label">Do you have allergies?</span>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="allergies_yn" value="Yes" id="allergies_yes" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="allergies_yn" value="No" id="allergies_no" />
+                <span>No</span>
+              </label>
+            </div>
+            <div class="conditional-field" id="allergies_detail">
+              <label for="allergies">List your allergies</label>
+              <textarea id="allergies" name="allergies" rows="3" placeholder="e.g. Penicillin, Peanuts, Latex…"></textarea>
+            </div>
+          </div>
+
+          <!-- MEDICATIONS — Yes/No + conditional textarea -->
+          <div class="field field-span-2">
+            <span class="field-label">Are you currently taking medications?</span>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="medications_yn" value="Yes" id="medications_yes" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="medications_yn" value="No" id="medications_no" />
+                <span>No</span>
+              </label>
+            </div>
+            <div class="conditional-field" id="medications_detail">
+              <label for="medications">List your medications</label>
+              <textarea id="medications" name="medications" rows="3" placeholder="e.g. Metformin 500mg twice daily…"></textarea>
+            </div>
+          </div>
+
+          <!-- CHRONIC CONDITIONS — Yes/No + conditional textarea -->
+          <div class="field field-span-2">
+            <span class="field-label">Do you have any chronic conditions?</span>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="chronic_yn" value="Yes" id="chronic_yes" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="chronic_yn" value="No" id="chronic_no" />
+                <span>No</span>
+              </label>
+            </div>
+            <div class="conditional-field" id="chronic_detail">
+              <label for="chronic_conditions">Describe your chronic conditions</label>
+              <textarea id="chronic_conditions" name="chronic_conditions" rows="3" placeholder="e.g. Type 2 Diabetes, Hypertension…"></textarea>
+            </div>
+          </div>
+
+          <!-- MEDICAL HISTORY — Yes/No + conditional textarea -->
+          <div class="field field-span-2">
+            <span class="field-label">Do you have a medical history?</span>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="history_yn" value="Yes" id="history_yes" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="history_yn" value="No" id="history_no" />
+                <span>No</span>
+              </label>
+            </div>
+            <div class="conditional-field" id="history_detail">
+              <label for="history">Medical History</label>
+              <textarea id="history" name="history" rows="3" placeholder="Past surgeries, hospitalizations, notable diagnoses…"></textarea>
+            </div>
+          </div>
+
+          <!-- INSURANCE — Yes/No + conditional fields -->
+          <div class="field field-span-2">
+            <span class="field-label">Do you have health insurance?</span>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="insurance_yn" value="Yes" id="insurance_yes" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="insurance_yn" value="No" id="insurance_no" />
+                <span>No</span>
+              </label>
+            </div>
+            <div class="conditional-field" id="insurance_detail">
+              <div class="form-grid-inner">
+                <div class="field">
+                  <label for="insurance_provider">Insurance Provider</label>
+                  <input id="insurance_provider" name="insurance_provider" placeholder="e.g. PhilHealth, Maxicare…" />
+                </div>
+                <div class="field">
+                  <label for="insurance_policy">Policy Number</label>
+                  <input id="insurance_policy" name="insurance_policy" placeholder="e.g. PH-123456789" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRIMARY CARE PROVIDER — Yes/No + conditional fields -->
+          <div class="field field-span-2">
+            <span class="field-label">Do you have a Primary Care Provider?</span>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="pcp_yn" value="Yes" id="pcp_yes" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="pcp_yn" value="No" id="pcp_no" />
+                <span>No</span>
+              </label>
+            </div>
+            <div class="conditional-field" id="pcp_detail">
+              <div class="form-grid-inner">
+                <div class="field">
+                  <label for="pcp_name">Provider Name</label>
+                  <input id="pcp_name" name="pcp_name" placeholder="e.g. Dr. Maria Santos" />
+                </div>
+                <div class="field">
+                  <label for="pcp_contact">Provider Contact</label>
+                  <input id="pcp_contact" name="pcp_contact" placeholder="e.g. +63 912 345 6789" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="field field-span-2 actions">
+            <button class="btn btn-primary" type="submit">Save Patient Record</button>
+            <button class="btn btn-secondary" type="reset">Clear</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="card result-card">
+        <div class="section-head">
+          <p class="kicker">Generated Output</p>
+          <h3>Patient QR Result</h3>
+        </div>
+
+        <div id="statusBox" class="status-box">Waiting for Data Submission.</div>
+
+        <div class="result-item">
+          <span>Patient ID</span>
+          <strong id="patientIdText">—</strong>
+        </div>
+
+        <div class="result-item">
+          <span>Record URL</span>
+          <a id="recordLink" href="#" target="_blank" rel="noopener noreferrer">—</a>
+        </div>
+
+        <div class="qr-wrap">
+          <img id="qrImage" alt="Patient QR code" width="240" height="240" />
+        </div>
+
+        <div class="order-card">
+          <div class="section-head">
+            <p class="kicker">Order Form</p>
+            <h3>Place Your Order</h3>
+          </div>
+
+          <div class="products">
+            <div class="product-preview">
+              <img src="assets/Product1.png" alt="RESQ ME product preview" class="product-preview-image" />
+              <img src="assets/Product2.png" alt="RESQ ME product preview" class="product-preview-image" />
+              <img src="assets/Product3.png" alt="RESQ ME product preview" class="product-preview-image" />
+            </div>
+          </div>
+
+          <form id="orderForm" action="https://api.web3forms.com/submit" method="POST" class="order-form">
+            <input type="hidden" name="access_key" value="bb783592-d7c6-4c0a-a194-38c0010f7713">
+            <input type="hidden" name="subject" value="New Order Received!">
+            <input type="checkbox" name="botcheck" class="hidden" aria-hidden="true" tabindex="-1">
+
+            <div class="form-group">
+              <label for="order_product">Select Product</label>
+              <select name="product" id="order_product" required>
+                <option value="" disabled selected>Choose an Item...</option>
+                <option value="QR CODE SCREENSHOT | FREE">QR CODE SCREENSHOT | ₱FREE</option>
+                <option value="QR KEYCHAIN W/ NFC | ₱100">QR KEYCHAIN W/ NFC | ₱100</option>
+                <option value="QR CARD W/ NFC | ₱150">QR CARD W/ NFC | ₱150</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="order_quantity">Quantity</label>
+              <input type="number" name="quantity" id="order_quantity" min="1" value="1" required />
+            </div>
+
+            <div class="form-group">
+              <label for="order_name">Full Name</label>
+              <input type="text" name="name" id="order_name" required placeholder="Juan Dela Cruz" />
+            </div>
+
+            <div class="form-group">
+              <label for="order_patient_id">Patient ID</label>
+              <input type="text" name="patient_id" id="order_patient_id" required placeholder="PT-20260518-75456683" />
+            </div>
+
+            <div class="form-group">
+              <label for="order_email">Email Address</label>
+              <input type="email" name="email" id="order_email" required placeholder="resqme@example.com" />
+            </div>
+
+            <div class="form-group">
+              <label for="order_address">Shipping Address</label>
+              <input type="text" name="address" id="order_address" required placeholder="Pureza Street" />
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label for="order_city">City</label>
+                <input type="text" name="city" id="order_city" required />
+              </div>
+              <div class="form-group">
+                <label for="order_zip">ZIP / Postal Code</label>
+                <input type="text" name="zip" id="order_zip" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="order_notes">Order Notes (Optional)</label>
+              <textarea name="order_notes" id="order_notes" rows="3" placeholder="Any delivery instructions... Payment will be processed via email upon checkout..."></textarea>
+            </div>
+
+            <button class="btn btn-primary order-submit" type="submit">Submit Order</button>
+          </form>
+        </div>
+      </aside>
+    </section>
+    <br>
+
+    <section id="promos" class="card promos">
+      <div class="section-head">
+        <p class="kicker">Promos</p>
+        <h3>Current promotions</h3>
+      </div>
+      <p>RESQ ME currently has no active promotions, as we maintain low everyday prices to ensure our life-saving technology remains accessible to everyone. We offer a free Screenshot-Based Emergency Profile, a QR and NFC Keychain for 100 pesos, and a QR and NFC Card-Style Tag for 150 pesos. For future updates and brand announcements, please follow our social media pages.</p>
+    </section>
+
+    <section id="about" class="card about">
+      <div class="section-head">
+        <p class="kicker">About</p>
+        <h3>About RESQ ME</h3>
+      </div>
+      <p>RESQ ME is a student-led health technology startup that provides emergency medical identification solutions through digital and physical products. The company utilizes QR codes and NFC technology to grant first responders instant access to a user's critical health data, such as allergies and chronic conditions. Their offerings include a free digital profile, as well as affordable keychains and card-style tags designed for quick scanning during crises. Operated by a specialized student management team, the venture prioritizes a lean, flat organizational structure to maintain operational flexibility and data privacy. By streamlining the intake of vital information, the service aims to improve emergency response times and personal safety for all users. The brand's visual identity uses red, white, and black to signify medical urgency and professional reliability.</p>
+    </section>
+
+    <section id="contact" class="card contact">
+      <div class="section-head">
+        <p class="kicker">Contact</p>
+        <h3>Get in touch</h3>
+      </div>
+      <p>Email us at <a href="mailto:support@resqme.com">support@resqme.com</a></p>
+    </section>
+  </main>
+
+  <div class="image-modal" id="imageModal" aria-hidden="true">
+    <button class="image-modal-close" id="imageModalClose" type="button" aria-label="Close image preview">×</button>
+    <img id="imageModalPreview" alt="Expanded product preview" />
+  </div>
+
+  <footer class="site-footer card" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <p>© 2026 RESQ ME. All rights reserved.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#home">Home</a>
+        <a href="#shop">Shop</a>
+        <a href="#patientForm">Intake Form</a>
+        <a href="#orderForm">Order Form</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+
+  <!-- ═══════════════════════════════════════════════
+       DATA PRIVACY MODAL SCRIPT
+       Runs immediately — no dependency on script.js
+  ════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      const SESSION_KEY = 'resqme_privacy_accepted';
+
+      const overlay     = document.getElementById('privacyOverlay');
+      const agreeCheck  = document.getElementById('dpAgreeCheck');
+      const btnAccept   = document.getElementById('btnAccept');
+      const btnDecline  = document.getElementById('btnDecline');
+
+      // If user already accepted this session, skip the modal
+      if (sessionStorage.getItem(SESSION_KEY) === '1') {
+        dismissModal();
+        return;
+      }
+
+      // Lock scrolling and blur the page while modal is open
+      document.body.classList.add('dp-locked');
+      document.body.style.overflow = 'hidden';
+
+      // Enable the Accept button only when checkbox is ticked
+      agreeCheck.addEventListener('change', () => {
+        btnAccept.disabled = !agreeCheck.checked;
+      });
+
+      // Accept — dismiss modal and unlock page
+      btnAccept.addEventListener('click', () => {
+        if (!agreeCheck.checked) return;
+        sessionStorage.setItem(SESSION_KEY, '1');
+        dismissModal();
+      });
+
+      // Decline — redirect away from the site
+      btnDecline.addEventListener('click', () => {
+        // Redirect to a neutral page; adjust URL as needed
+        window.location.href = 'about:blank';
+      });
+
+      // Trap keyboard focus inside the modal (accessibility)
+      overlay.addEventListener('keydown', (e) => {
+        if (e.key !== 'Tab') return;
+        const focusable = overlay.querySelectorAll(
+          'button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last  = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      });
+
+      // Block Escape key from closing the modal
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay && !overlay.classList.contains('dp-hidden')) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+
+      function dismissModal() {
+        overlay.style.display = 'none';
+        document.body.classList.remove('dp-locked');
+        document.body.style.overflow = '';
+      }
+    })();
+  </script>
+
+</body>
+</html>
