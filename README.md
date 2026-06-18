@@ -149,7 +149,7 @@ Developed by **DIT 1-1, Group 7** at the Polytechnic University of the Philippin
 
 ## License
 
-No license has been specified yet. If you intend to open-source this, add a `LICENSE` file (MIT is a common default for student/portfolio projects); otherwise treat the code as all-rights-reserved by the team above.
+ all-rights-reserved by the team above.
 
 ## Contact
 
