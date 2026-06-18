@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <!-- ═══════════════════════════════════════════════
        DATA PRIVACY ACT MODAL — inline styles only,
@@ -224,7 +226,7 @@
 
       <div class="dp-header">
         <h2 id="dpTitle">🔒 Data Privacy Notice</h2>
-        <p>Republic Act No. 10173 — Data Privacy Act of 2012</p>
+        <p>Republic Act No. 10173 - Data Privacy Act of 2012</p>
       </div>
 
       <div class="dp-body">
@@ -250,11 +252,11 @@
 
         <h3>Your Rights Under RA 10173</h3>
         <ul>
-          <li><strong>Right to be informed</strong> — you are notified before data is collected</li>
-          <li><strong>Right to access</strong> — you may request a copy of your stored data</li>
-          <li><strong>Right to rectification</strong> — you may correct inaccurate data</li>
-          <li><strong>Right to erasure</strong> — you may request deletion of your record</li>
-          <li><strong>Right to data portability</strong> — you may request a copy in usable format</li>
+          <li><strong>Right to be informed</strong> - you are notified before data is collected</li>
+          <li><strong>Right to access</strong> - you may request a copy of your stored data</li>
+          <li><strong>Right to rectification</strong> - you may correct inaccurate data</li>
+          <li><strong>Right to erasure</strong> - you may request deletion of your record</li>
+          <li><strong>Right to data portability</strong> - you may request a copy in usable format</li>
         </ul>
 
         <h3>Data Retention</h3>
@@ -299,6 +301,7 @@
         <li><a href="#patientForm">Intake Form</a></li>
         <li><a href="#orderForm">Order Form</a></li>
         <li><a href="#about">About</a></li>
+        <li><a href="#retrieve">Retrieve QR</a></li>
         <div class="header-actions nav-actions">
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
         </div>
@@ -581,7 +584,7 @@
           <strong id="patientIdText">—</strong>
         </div>
 
-        <div class="result-item">
+        <div class="result-item" style="display:none;" aria-hidden="true">
           <span>Record URL</span>
           <a id="recordLink" href="#" target="_blank" rel="noopener noreferrer">—</a>
         </div>
@@ -596,33 +599,106 @@
             <h3>Place Your Order</h3>
           </div>
 
-          <div class="products">
-            <div class="product-preview">
-              <img src="assets/Product1.png" alt="RESQ ME product preview" class="product-preview-image" />
-              <img src="assets/Product2.png" alt="RESQ ME product preview" class="product-preview-image" />
-              <img src="assets/Product3.png" alt="RESQ ME product preview" class="product-preview-image" />
+          <!-- Product Cards -->
+          <div class="order-product-cards">
+            <div class="order-product-card" data-value="QR CODE SCREENSHOT | FREE" data-price="0">
+              <img src="assets/Product1.png" alt="QR Code Screenshot" class="product-preview-image" />
+              <div class="order-product-card-info">
+                <strong>QR Code Screenshot</strong>
+                <span class="order-product-badge free">FREE</span>
+                <p>Digital-only. Your emergency QR code is sent straight to your email no shipping needed. Perfect for saving on your phone or printing at home.</p>
+              </div>
+            </div>
+            <div class="order-product-card" data-value="QR KEYCHAIN W/ NFC | ₱100" data-price="100">
+              <img src="assets/Product2.png" alt="QR Keychain with NFC" class="product-preview-image" />
+              <div class="order-product-card-info">
+                <strong>QR Keychain w/ NFC</strong>
+                <span class="order-product-badge paid">₱100</span>
+                <p>Durable physical keychain with your QR code and embedded NFC chip. Attach it to your keys, bag, or lanyard so first responders can scan it instantly.</p>
+              </div>
+            </div>
+            <div class="order-product-card" data-value="QR CARD W/ NFC | ₱150" data-price="150">
+              <img src="assets/Product3.png" alt="QR Card with NFC" class="product-preview-image" />
+              <div class="order-product-card-info">
+                <strong>QR Card w/ NFC</strong>
+                <span class="order-product-badge paid">₱150</span>
+                <p>Credit-card sized tag with your QR code and NFC chip. Slim enough for any wallet ideal if you want a professional, discreet emergency ID.</p>
+              </div>
             </div>
           </div>
 
-          <form id="orderForm" action="https://api.web3forms.com/submit" method="POST" class="order-form">
+          <!-- Delivery & Payment Info Banner -->
+          <div class="order-info-banner">
+            <div class="order-info-item">
+              <span class="order-info-icon">🚚</span>
+              <div>
+                <strong>Delivery</strong>
+                <p>Ships via LBC / J&amp;T Express within 3-7 business days after payment confirmation.</p>
+              </div>
+            </div>
+            <div class="order-info-item">
+              <span class="order-info-icon">💳</span>
+              <div>
+                <strong>Payment</strong>
+                <p>GCash, Maya, or bank transfer. Payment details will be sent to your email after submission.</p>
+              </div>
+            </div>
+            <div class="order-info-item">
+              <span class="order-info-icon">📦</span>
+              <div>
+                <strong>Free Product</strong>
+                <p>QR Screenshot orders are emailed digitally no shipping fee, no waiting.</p>
+              </div>
+            </div>
+          </div>
+
+          <form id="orderForm" class="order-form">
             <input type="hidden" name="access_key" value="bb783592-d7c6-4c0a-a194-38c0010f7713">
             <input type="hidden" name="subject" value="New Order Received!">
+            <!-- Order summary fields — filled by JS before submit -->
+            <input type="hidden" name="unit_price" id="hidden_unit_price">
+            <input type="hidden" name="quantity_ordered" id="hidden_quantity">
+            <input type="hidden" name="shipping_fee" id="hidden_shipping">
+            <input type="hidden" name="order_total" id="hidden_total">
             <input type="checkbox" name="botcheck" class="hidden" aria-hidden="true" tabindex="-1">
 
             <div class="form-group">
               <label for="order_product">Select Product</label>
               <select name="product" id="order_product" required>
                 <option value="" disabled selected>Choose an Item...</option>
-                <option value="QR CODE SCREENSHOT | FREE">QR CODE SCREENSHOT | ₱FREE</option>
-                <option value="QR KEYCHAIN W/ NFC | ₱100">QR KEYCHAIN W/ NFC | ₱100</option>
-                <option value="QR CARD W/ NFC | ₱150">QR CARD W/ NFC | ₱150</option>
+                <option value="QR CODE SCREENSHOT | FREE" data-price="0">QR Code Screenshot — FREE (Digital)</option>
+                <option value="QR KEYCHAIN W/ NFC | ₱100" data-price="100">QR Keychain w/ NFC — ₱100</option>
+                <option value="QR CARD W/ NFC | ₱150" data-price="150">QR Card w/ NFC — ₱150</option>
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="order_quantity_wrap">
               <label for="order_quantity">Quantity</label>
               <input type="number" name="quantity" id="order_quantity" min="1" value="1" required />
             </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary" id="orderSummary">
+              <div class="order-summary-row">
+                <span>Unit Price</span>
+                <span id="summaryUnitPrice">—</span>
+              </div>
+              <div class="order-summary-row">
+                <span>Quantity</span>
+                <span id="summaryQty">—</span>
+              </div>
+              <div class="order-summary-row">
+                <span>Shipping Fee</span>
+                <span id="summaryShipping">—</span>
+              </div>
+              <div class="order-summary-row total">
+                <span>Total</span>
+                <span id="summaryTotal">—</span>
+              </div>
+            </div>
+
+            <hr class="order-divider" />
+            <p class="order-section-label">📋 Your Details</p>
 
             <div class="form-group">
               <label for="order_name">Full Name</label>
@@ -630,66 +706,288 @@
             </div>
 
             <div class="form-group">
-              <label for="order_patient_id">Patient ID</label>
+              <label for="order_patient_id">Patient ID <span class="hint-inline">(from the form above)</span></label>
               <input type="text" name="patient_id" id="order_patient_id" required placeholder="PT-20260518-75456683" />
             </div>
 
             <div class="form-group">
-              <label for="order_email">Email Address</label>
+              <label for="order_email">Email Address <span class="hint-inline">(payment details sent here)</span></label>
               <input type="email" name="email" id="order_email" required placeholder="resqme@example.com" />
             </div>
 
             <div class="form-group">
-              <label for="order_address">Shipping Address</label>
-              <input type="text" name="address" id="order_address" required placeholder="Pureza Street" />
+              <label for="order_phone">Phone Number</label>
+              <input type="tel" name="phone" id="order_phone" placeholder="+63 912 345 6789" />
             </div>
 
-            <div class="row">
+            <!-- Shipping fields — hidden for free/digital product -->
+            <div id="shippingFields">
+              <hr class="order-divider" />
+              <p class="order-section-label">🚚 Shipping Details</p>
+
               <div class="form-group">
-                <label for="order_city">City</label>
-                <input type="text" name="city" id="order_city" required />
+                <label for="order_address">Street Address</label>
+                <input type="text" name="address" id="order_address" required placeholder="123 Pureza Street, Sta. Mesa" />
               </div>
+
+              <div class="row">
+                <div class="form-group">
+                  <label for="order_city">City / Municipality</label>
+                  <input type="text" name="city" id="order_city" required placeholder="Manila" />
+                </div>
+                <div class="form-group">
+                  <label for="order_zip">ZIP / Postal Code</label>
+                  <input type="text" name="zip" id="order_zip" required placeholder="1016" />
+                </div>
+              </div>
+
               <div class="form-group">
-                <label for="order_zip">ZIP / Postal Code</label>
-                <input type="text" name="zip" id="order_zip" required />
+                <label for="order_province">Province</label>
+                <input type="text" name="province" id="order_province" placeholder="Metro Manila" />
               </div>
+            </div>
+
+            <hr class="order-divider" />
+            <p class="order-section-label">💳 Payment Method</p>
+
+            <div class="form-group">
+              <div class="payment-options">
+                <label class="payment-option">
+                  <input type="radio" name="payment_method" value="GCash" required />
+                  <span>🔵 GCash</span>
+                </label>
+                <label class="payment-option">
+                  <input type="radio" name="payment_method" value="Maya" />
+                  <span>🐦 Maya</span>
+                </label>
+                <label class="payment-option">
+                  <input type="radio" name="payment_method" value="Bank Transfer" />
+                  <span>🏦 Bank Transfer</span>
+                </label>
+              </div>
+              <small class="hint">Payment instructions will be emailed to you after submission.</small>
             </div>
 
             <div class="form-group">
-              <label for="order_notes">Order Notes (Optional)</label>
-              <textarea name="order_notes" id="order_notes" rows="3" placeholder="Any delivery instructions... Payment will be processed via email upon checkout..."></textarea>
+              <label for="order_notes">Order Notes <span class="hint-inline">(Optional)</span></label>
+              <textarea name="order_notes" id="order_notes" rows="3" placeholder="Any special delivery instructions or requests..."></textarea>
             </div>
 
-            <button class="btn btn-primary order-submit" type="submit">Submit Order</button>
+            <button class="btn btn-primary order-submit" type="submit">📦 Submit Order</button>
+            <p class="order-form-status" id="orderStatus"></p>
           </form>
         </div>
       </aside>
     </section>
     <br>
 
+    <!-- ═══════ PROMOS ═══════ -->
     <section id="promos" class="card promos">
       <div class="section-head">
         <p class="kicker">Promos</p>
-        <h3>Current promotions</h3>
+        <h3>Current Promotions</h3>
       </div>
-      <p>RESQ ME currently has no active promotions, as we maintain low everyday prices to ensure our life-saving technology remains accessible to everyone. We offer a free Screenshot-Based Emergency Profile, a QR and NFC Keychain for 100 pesos, and a QR and NFC Card-Style Tag for 150 pesos. For future updates and brand announcements, please follow our social media pages.</p>
+
+      <div class="promo-no-active">
+        <span class="promo-no-badge">No active promos right now</span>
+        <p>We keep our prices low every day so life-saving technology stays within reach for everyone. Follow us on social media to be the first to know when a promotion drops!</p>
+        <div class="promo-socials">
+          <a href="#" class="promo-social-btn" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            Facebook
+          </a>
+          <a href="#" class="promo-social-btn" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            Instagram
+          </a>
+          <a href="#" class="promo-social-btn" aria-label="TikTok">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.02-.06z"/></svg>
+            TikTok
+          </a>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:1.75rem;">
+        <p class="kicker">Everyday Pricing</p>
+      </div>
+      <div class="promo-pricing-cards">
+        <div class="promo-price-card">
+          <div class="promo-price-icon">📱</div>
+          <div class="promo-price-name">QR Screenshot</div>
+          <div class="promo-price-tag free">FREE</div>
+          <p class="promo-price-desc">Digital-only. Emailed straight to your inbox no shipping, no waiting.</p>
+        </div>
+        <div class="promo-price-card featured">
+          <div class="promo-popular-badge">Most Popular</div>
+          <div class="promo-price-icon">🏷️</div>
+          <div class="promo-price-name">QR Keychain w/ NFC</div>
+          <div class="promo-price-tag">₱100</div>
+          <p class="promo-price-desc">Physical keychain with QR + NFC. Clips to your keys or bag.</p>
+        </div>
+        <div class="promo-price-card">
+          <div class="promo-price-icon">🎴</div>
+          <div class="promo-price-name">QR Card w/ NFC</div>
+          <div class="promo-price-tag">₱150</div>
+          <p class="promo-price-desc">Wallet-sized card with QR + NFC. Slim, discreet, always ready.</p>
+        </div>
+      </div>
     </section>
 
+    <!-- ═══════ ABOUT ═══════ -->
     <section id="about" class="card about">
       <div class="section-head">
         <p class="kicker">About</p>
         <h3>About RESQ ME</h3>
       </div>
-      <p>RESQ ME is a student-led health technology startup that provides emergency medical identification solutions through digital and physical products. The company utilizes QR codes and NFC technology to grant first responders instant access to a user's critical health data, such as allergies and chronic conditions. Their offerings include a free digital profile, as well as affordable keychains and card-style tags designed for quick scanning during crises. Operated by a specialized student management team, the venture prioritizes a lean, flat organizational structure to maintain operational flexibility and data privacy. By streamlining the intake of vital information, the service aims to improve emergency response times and personal safety for all users. The brand's visual identity uses red, white, and black to signify medical urgency and professional reliability.</p>
+
+      <p class="about-lead">We're a student-led health technology startup on a mission to make emergency medical identification accessible to every Filipino not just those who can afford it.</p>
+
+      <div class="about-highlights">
+        <div class="about-highlight-card">
+          <span class="about-highlight-icon">🚨</span>
+          <div>
+            <strong>What We Do</strong>
+            <p>We link your critical health data - allergies, medications, chronic conditions - to a QR code and NFC chip that first responders can scan in seconds during an emergency.</p>
+          </div>
+        </div>
+        <div class="about-highlight-card">
+          <span class="about-highlight-icon">👨‍🦰👩‍🦰</span>
+          <div>
+            <strong>Who We Are</strong>
+            <p>A passionate student management team operating with a lean, flat structure. Being student-led means we move fast, stay agile, and keep our prices honest.</p>
+          </div>
+        </div>
+        <div class="about-highlight-card">
+          <span class="about-highlight-icon">🔒</span>
+          <div>
+            <strong>Privacy First</strong>
+            <p>Your health data is yours. We handle every record under strict data privacy standards and you can request deletion of your profile at any time.</p>
+          </div>
+        </div>
+        <div class="about-highlight-card">
+          <span class="about-highlight-icon">🌏</span>
+          <div>
+            <strong>Our Mission</strong>
+            <p>To improve emergency response times and personal safety across the Philippines by putting life-saving information exactly where it needs to be on you.</p>
+          </div>
+        </div>
+      </div>
     </section>
 
+    <!-- ═══════ CONTACT ═══════ -->
     <section id="contact" class="card contact">
       <div class="section-head">
         <p class="kicker">Contact</p>
-        <h3>Get in touch</h3>
+        <h3>Get in Touch</h3>
       </div>
-      <p>Email us at <a href="mailto:support@resqme.com">support@resqme.com</a></p>
+
+      <div class="contact-layout">
+
+        <!-- Left: info -->
+        <div class="contact-info">
+          <div class="contact-info-item">
+            <span class="contact-info-icon">📧</span>
+            <div>
+              <strong>Email</strong>
+              <a href="mailto:support@resqme.com">support@resqme.com</a>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <span class="contact-info-icon">📱</span>
+            <div>
+              <strong>Social Media</strong>
+              <div class="contact-socials">
+                <a href="#" class="contact-social-link">Facebook</a>
+                <a href="#" class="contact-social-link">Instagram</a>
+                <a href="#" class="contact-social-link">TikTok</a>
+              </div>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <span class="contact-info-icon">⏰</span>
+            <div>
+              <strong>Response Time</strong>
+              <p>We typically reply within 24 hours on business days.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: contact form -->
+        <form class="contact-form" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+
+
+          <div class="form-group">
+            <label for="contact_name">Your Name</label>
+            <input type="text" id="contact_name" name="name" required placeholder="Juan Dela Cruz" />
+          </div>
+          <div class="form-group">
+            <label for="contact_email">Email Address</label>
+            <input type="email" id="contact_email" name="email" required placeholder="juan@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="contact_subject">Subject</label>
+            <input type="text" id="contact_subject" name="contact_subject" required placeholder="Question about my order..." />
+          </div>
+          <div class="form-group">
+            <label for="contact_message">Message</label>
+            <textarea id="contact_message" name="message" rows="4" required placeholder="Tell us how we can help..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary contact-submit" style="width:100%;">✉️ Send Message</button>
+          <p class="contact-form-status" id="contactStatus"></p>
+        </form>
+
+      </div>
     </section>
+
+    <!-- ═══════ RETRIEVE QR CODE ═══════ -->
+    <section id="retrieve" class="card retrieve-section">
+      <div class="section-head">
+        <p class="kicker">Lost your QR code?</p>
+        <h3>Retrieve Your QR Code</h3>
+      </div>
+
+      <div class="retrieve-layout">
+        <div class="retrieve-info">
+          <div class="retrieve-info-item">
+            <span class="retrieve-info-icon">🔍</span>
+            <div>
+              <strong>How it works</strong>
+              <p>Enter your Patient ID and the email address you used when you registered. We'll verify your identity and resend your QR code instantly.</p>
+            </div>
+          </div>
+          <div class="retrieve-info-item">
+            <span class="retrieve-info-icon">🔒</span>
+            <div>
+              <strong>Secure verification</strong>
+              <p>Your QR code will only be sent if the email matches the one on record for that Patient ID protecting your data from unauthorized access.</p>
+            </div>
+          </div>
+          <div class="retrieve-info-item">
+            <span class="retrieve-info-icon">📋</span>
+            <div>
+              <strong>Where is my Patient ID?</strong>
+              <p>Your Patient ID starts with <strong>PT-</strong> and was shown on screen after you registered. It was also included in your confirmation email.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="retrieve-form-wrap">
+          <form id="retrieveForm" class="retrieve-form">
+            <div class="form-group">
+              <label for="retrieve_patient_id">Patient ID</label>
+              <input type="text" id="retrieve_patient_id" required placeholder="PT-20260518-75456683" autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <label for="retrieve_email">Email Address <span class="hint-inline">(used during registration)</span></label>
+              <input type="email" id="retrieve_email" required placeholder="juan@example.com" />
+            </div>
+            <button type="submit" class="btn btn-primary retrieve-submit" style="width:100%;">🔍 Find & Send My QR Code</button>
+            <p class="retrieve-status" id="retrieveStatus"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <div class="image-modal" id="imageModal" aria-hidden="true">
@@ -708,6 +1006,7 @@
         <a href="#patientForm">Intake Form</a>
         <a href="#orderForm">Order Form</a>
         <a href="#about">About</a>
+        <a href="#retrieve">Retrieve QR</a>
       </nav>
     </div>
   </footer>
