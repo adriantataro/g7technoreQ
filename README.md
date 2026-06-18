@@ -20,11 +20,7 @@ A student-built health-technology service that turns a short medical intake form
 - [How It Works](#how-it-works)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
-- [Data Model](#data-model)
-- [Product Tiers](#product-tiers)
 - [Data Privacy & Compliance](#data-privacy--compliance)
-- [Security Notes](#security-notes)
-- [Roadmap](#roadmap)
 - [Team](#team)
 - [License](#license)
 - [Contact](#contact)
@@ -105,36 +101,7 @@ resq-me/
 
 > The Apps Script project intentionally has its own file named `Index.html` (referenced via `HtmlService.createTemplateFromFile("Index")`). It is a different file from the root `index.html` — one is the public marketing/intake site, the other is the bare-bones page a scanned QR code opens.
 
-## Getting Started
 
-### 1. Set up the backend
-
-1. Create a new Google Sheet — this becomes the database.
-2. Open **Extensions → Apps Script** from that Sheet.
-3. Create a script file named `Code` and paste in the contents of `apps-script/Code.gs`.
-4. Create an HTML file named `Index` and paste in the contents of `apps-script/Index.html`.
-5. Replace the placeholder constants at the top of `Code.gs` with your own values (see [Security Notes](#security-notes) before hardcoding anything):
-   - `NOTIFY_EMAIL` — inbox that receives admin notifications.
-   - `EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`, `EMAILJS_PUBLIC_KEY` — from your EmailJS account.
-   - `BREVO_API_KEY` — from your Brevo account.
-
-### 2. Deploy the Web App
-
-1. **Deploy → New deployment → Web app**.
-2. Set **Execute as: Me** and **Who has access: Anyone**.
-3. Copy the generated `/exec` URL — this is your `SCRIPT_URL`.
-4. Paste that URL back into the `SCRIPT_URL` constant in `Code.gs` (used to build QR/record links) and redeploy.
-
-### 3. Set up the frontend
-
-1. Update `APPS_SCRIPT_URL` at the top of `script.js` with the same `/exec` URL from step 2.
-2. Host `index.html`, `style.css`, `script.js`, and `assets/` on any static host (GitHub Pages, Netlify, Vercel, etc.) — no build step is required.
-
-### 4. Test the loop
-
-1. Submit the intake form on the deployed site and confirm a row appears in the `Patients` sheet and the QR code renders.
-2. Open the record URL (or scan the QR) in a separate browser/incognito session and confirm the Patient Record Viewer loads the data.
-3. Submit a free-tier order and confirm the QR-code email arrives; submit a paid order and confirm the order appears in the `Orders` sheet.
 
 ### 5. Produce physical products
 
@@ -167,23 +134,7 @@ Paid orders add a flat ₱60 shipping fee, calculated live in the order form.
 
 The site shows a blocking consent modal before any form is usable, referencing the **Data Privacy Act of 2012 (Republic Act No. 10173)**. It outlines what's collected, how it's used, and the rights it's designed to support — to be informed, to access, to correct, to request erasure, and to data portability. Profile deletion requests are handled by contacting the support email; there's no self-service delete button in this version, so plan for that workflow (or build it) before relying on this for production use with real patient data.
 
-## Security Notes
 
-The uploaded source files contain working API keys and a live deployment URL hardcoded as constants (`BREVO_API_KEY`, `EMAILJS_PUBLIC_KEY`, `SCRIPT_URL`, etc.). Before pushing this repo somewhere public:
-
-- **Rotate any keys that have already been exposed.** Treat anything that was ever in a file you're about to publish as compromised.
-- **Move secrets out of source.** `BREVO_API_KEY` in particular should live in Apps Script's `PropertiesService` (Project Settings → Script Properties), not in the committed `.gs` file.
-- **EmailJS's public key is meant to be client-visible** by design, but its template and service IDs are still worth reviewing for any default rate limits or quotas you don't want abused.
-- **The `Patients` sheet stores photos as base64 strings directly in cells.** That's fine for a prototype at low volume, but will hit Sheets' cell-size and sheet-size limits faster than you'd expect — budget for moving to Drive-backed storage (there's a `savePhotoToDrive` helper already started in `Code.gs`) if this scales past a class project.
-
-## Roadmap
-
-Carried over from the team's business plan:
-
-- Move from manual, phone-based NFC encoding to industrial encoding + thermal card printing for larger batches.
-- Add a self-service "delete my record" flow to fully back the RA 10173 erasure right described in the privacy notice.
-- Move patient photos to Drive (or another object store) instead of inline base64.
-- Formal business registration and expansion beyond the initial PUP ITECH campus trade area.
 
 ## Team
 
